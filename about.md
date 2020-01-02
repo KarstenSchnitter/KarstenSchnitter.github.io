@@ -4,15 +4,18 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+Software Engineering and Architecture is a private blog on cloud computing and
+distributed systems. It provides insights into technical challenges and
+solutions, that occur on developing and running a platform-as-a-service on
+public and private cloud infrastructure.
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
+## Authors
 
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
+{% for author in site.authors %}
+### {{ author.name }}
 
+**Organization:** {{ author.organization }}  
+**Position:** {{ author.position }}  
 
-[jekyll-organization]: https://github.com/jekyll
+{{ author.content }}
+{% endfor %}
