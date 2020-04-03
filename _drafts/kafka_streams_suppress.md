@@ -12,6 +12,40 @@ Generating the changlog out of a KTable will generate at least one message for e
 
 To understand the availbable suppressions, it is necessary to know the aggregations Kafka Streams supports. Messages will always be aggregated by their respective Kafka message key. This aggregation can be unbound or windowed. Kafka Streams supports different kinds of time windows and also a notion of session windows. A detailed description of windowed aggregations is contained in the official documentation.
 
-Building on these aggregations, there are two modes of suppression, that are supported by Kafka Streams. All KTables support a time window suppression. That means changelog messages are only forwarded downstream after a certain duration has passed after the first change to the KTable was made. This requires a buffer, whose size can be configured in bytes or number of messages. If the buffer is exceeded before the duration is reached, the changelog will be emitted regardless. The other mode is only supported for windowed aggregations. In this case all changelog messages can be suppressed until the window is closed. For time windowed aggregations, it is required to configure a grace period, to allow for late messages. It can be set to 0, but it needs to be explicitly set, otherwise no message will be forwarded. Since the closing the window can occur well after any buffer size is exceeded, no messages will be forwarded if this limit is reached. Instead Kafka Streams will try to shutdown the application.
+Building on these aggregations, there are two modes of suppression, that are supported by Kafka Streams. All KTables support a time window suppression. That means changelog messages are only forwarded downstream after a certain duration has passed after the first change to the KTable was made. This requires a buffer, whose size can be configured in bytes or number of messages. If the buffer is exceeded before the duration is reached, the changelog will be emitted regardless.
+
+```java
+public suppressWithBoundedBuffer(org.apache.kafka.streams.StreamsBuilder builder) {
+    builder.stream("events")
+        .groupByKey() // group events by key
+        .count()      // use event count as easy aggregation
+        .suppress(
+            Suppressed.untilTimeLimit(
+                Duration.ofSeconds(2),       // emit current count every 2 seconds
+                BufferConfig.maxRecords(100) // collect at most 100 different keys
+            )
+        );
+}
+```
+
+The other mode is only supported for windowed aggregations. In this case all changelog messages can be suppressed until the window is closed. For time windowed aggregations, it is required to configure a grace period, to allow for late messages. It can be set to 0, but it needs to be explicitly set, otherwise no message will be forwarded. Since the closing the window can occur well after any buffer size is exceeded, no messages will be forwarded if this limit is reached. Instead Kafka Streams will try to shutdown the application.
+
+```java
+public suppressWithUnboundedBuffer(org.apache.kafka.streams.StreamsBuilder builder) {
+    builder.stream("events")
+        .groupByKey() // group events by key
+        .windowedBy(
+            TimeWindows
+                .of(Duration.ofSeconds(2))    // create time windows of 2 seconds
+                .grace(Duration.ofSeconds(1)) // allow 1 second delay after close
+        )
+        .count()      // use event count as easy aggregation
+        .suppress(
+            Suppressed.untilWindowCloses(
+                BufferConfig.unbounded()  // do not restrict buffer
+            )
+        );
+}
+```
 
 There is a nice blog post by John Roesler on [Kafka Streams take on Watermarks and Triggers](https://www.confluent.io/blog/kafka-streams-take-on-watermarks-and-triggers/), that describes the suppress feature in great detail.
