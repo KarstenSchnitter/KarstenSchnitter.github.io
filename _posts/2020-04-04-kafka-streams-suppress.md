@@ -3,6 +3,7 @@ layout: post
 title: Kafka Streams suppress feature
 categories: what-i-learned
 tags: java kafka streams
+author: karsten
 ---
 [Kafka Streams](https://kafka.apache.org/documentation/streams/) is a Java streaming framework, that tightly integrates with [Apacha Kafka](https://kafka.apache.org/). In contrast to [Apache Spark](https://spark.apache.org/) of [Apache Flink](https://flink.apache.org/) it does not require a separate cluster runtime. Instead it consist of a Java library to be fully integrated into any Java application. In that way it can augment the capabilities of that application by adding stream processing of Kafka topics. For a full feature description of Kafka Streams check out the ocumentation on the [Apache project page](https://kafka.apache.org/documentation/streams/) or from [Confluent](https://docs.confluent.io/current/streams/index.html).
 
@@ -15,14 +16,14 @@ To understand the availbable suppressions, it is necessary to know the aggregati
 Building on these aggregations, there are two modes of suppression, that are supported by Kafka Streams. All KTables support a time window suppression. That means changelog messages are only forwarded downstream after a certain duration has passed after the first change to the KTable was made. This requires a buffer, whose size can be configured in bytes or number of messages. If the buffer is exceeded before the duration is reached, the changelog will be emitted regardless.
 
 ```java
-public suppressWithBoundedBuffer(org.apache.kafka.streams.StreamsBuilder builder) {
+public suppressWithBoundedBuffer(StreamsBuilder builder) {
     builder.stream("events")
         .groupByKey() // group events by key
         .count()      // use event count as easy aggregation
         .suppress(
             Suppressed.untilTimeLimit(
-                Duration.ofSeconds(2),       // emit current count every 2 seconds
-                BufferConfig.maxRecords(100) // collect at most 100 different keys
+                Duration.ofSeconds(2),       // emit count every 2 seconds
+                BufferConfig.maxRecords(100) // collect at most 100 keys
             )
         );
 }
@@ -31,18 +32,18 @@ public suppressWithBoundedBuffer(org.apache.kafka.streams.StreamsBuilder builder
 The other mode is only supported for windowed aggregations. In this case all changelog messages can be suppressed until the window is closed. For time windowed aggregations, it is required to configure a grace period, to allow for late messages. It can be set to 0, but it needs to be explicitly set, otherwise no message will be forwarded. Since the closing the window can occur well after any buffer size is exceeded, no messages will be forwarded if this limit is reached. Instead Kafka Streams will try to shutdown the application.
 
 ```java
-public suppressWithUnboundedBuffer(org.apache.kafka.streams.StreamsBuilder builder) {
+public suppressWithUnboundedBuffer(StreamsBuilder builder) {
     builder.stream("events")
         .groupByKey() // group events by key
         .windowedBy(
             TimeWindows
-                .of(Duration.ofSeconds(2))    // create time windows of 2 seconds
-                .grace(Duration.ofSeconds(1)) // allow 1 second delay after close
+                .of(Duration.ofSeconds(2))    // time windows of 2 seconds
+                .grace(Duration.ofSeconds(1)) // allow 1 second lateness
         )
-        .count()      // use event count as easy aggregation
+        .count() // use event count as easy aggregation
         .suppress(
             Suppressed.untilWindowCloses(
-                BufferConfig.unbounded()  // do not restrict buffer
+                BufferConfig.unbounded() // do not restrict buffer
             )
         );
 }
