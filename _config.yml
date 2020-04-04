@@ -23,6 +23,7 @@ url: "https://karstenschnitter.github.io" # the base hostname & protocol for you
 twitter_username: ksse89461725
 github_username:  KarstenSchnitter
 permalink: pretty
+show_excerpts: true
 
 header_pages:
   - about.md

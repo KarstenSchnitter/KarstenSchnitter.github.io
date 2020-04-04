@@ -1,11 +1,11 @@
 ---
 layout: post
-title: Kafka Streams suppress feature
+title: Kafka Streams Suppress Feature
 categories: what-i-learned
 tags: java kafka streams
 author: karsten
 ---
-[Kafka Streams](https://kafka.apache.org/documentation/streams/) is a Java streaming framework, that tightly integrates with [Apacha Kafka](https://kafka.apache.org/). In contrast to [Apache Spark](https://spark.apache.org/) of [Apache Flink](https://flink.apache.org/) it does not require a separate cluster runtime. Instead it consist of a Java library to be fully integrated into any Java application. In that way it can augment the capabilities of that application by adding stream processing of Kafka topics. For a full feature description of Kafka Streams check out the ocumentation on the [Apache project page](https://kafka.apache.org/documentation/streams/) or from [Confluent](https://docs.confluent.io/current/streams/index.html).
+[Kafka Streams](https://kafka.apache.org/documentation/streams/) is a Java streaming framework, that tightly integrates with [Apacha Kafka](https://kafka.apache.org/). In contrast to [Apache Spark](https://spark.apache.org/) of [Apache Flink](https://flink.apache.org/) it does not require a separate cluster runtime. Instead it consist of a Java library to be fully integrated into any Java application. In that way it can augment the capabilities of that application by adding stream processing of Kafka topics. The suppression feature allows for a fine-grained control of the message frequency when using aggregations. For a full feature description of Kafka Streams check out the documentation on the [Apache project page](https://kafka.apache.org/documentation/streams/) or from [Confluent](https://docs.confluent.io/current/streams/index.html). 
 
 Kafka Streams provides [its own DSL](https://kafka.apache.org/24/documentation/streams/developer-guide/dsl-api.html) to describe the stream processing topology. It is build upon two primitives: KStream and KTable. KStream is an abstraction of one or more Kafka topics. It supports message processing one message at a time. Aggregating multiple messages yields a KTable. KTables can be transformed back to a KStream consisting of the changelog of the KTable. The Kafka Streams documentation from Confluent contains a nice description of this [stream-table-duality](https://docs.confluent.io/current/streams/concepts.html#duality-of-streams-and-tables).
 
