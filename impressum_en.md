@@ -12,12 +12,10 @@ permalink: /impressum/en/
 Information in accordance with Section 5 TMG 
 
 Karsten Schnitter  
-Degenfeldstraße 2  
-76131 Karlsruhe  
+Karlsruhe  
 
 #### Contact Information
 
-Telephone: 0170 5404463  
 E-Mail: {{ site.email | encode_email }}  
 Internet address: {{ site.url }}
 

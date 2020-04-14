@@ -13,8 +13,7 @@ permalink: /impressum/de/
 Angaben gemäß § 5 TMG
 
 Karsten Schnitter  
-Degenfeldstraße 2  
-76131 Karlsruhe  
+Karlsruhe  
 
 **Vertreten durch:**
 
@@ -22,8 +21,8 @@ Karsten Schnitter
 
 **Kontakt:**
 
-Telefon: 0170-5404463  
-E-Mail: {{ site.email }}
+E-Mail: {{ site.email | encode_email }}
+Homepage: {{ site.url }}
 
 **Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:**
 
