@@ -1,12 +1,12 @@
 ---
 layout: post
 title: "A Polling Java Future"
-date: 2020-04-25 13:48:00 +0200
 categories: what-i-learned
 tags: java concurrency future
+author: karsten
 ---
 There are times in Java, when we want to act on a state transition in some object.
-Ideally, the object allows to register a listener, which is called when the state changes.
+Ideally, the object allows us to register a listener, which is called when the state changes.
 Unfortunately, this is not always the case, especially when the class stems from a third-party library and is outside our control.
 In this case, we need to poll the state regularly, to detect the change we are interested in and then invoke the callback we want.
 The [Java concurrency library](https://docs.oracle.com/javase/8/docs/api/index.html?java/util/concurrent/package-summary.html) offers a neat abstraction with the [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html).
@@ -83,7 +83,7 @@ The polling is now started by scheduling a [Runnable](https://docs.oracle.com/ja
 We use an anonymous lambda function, that checks the phase of our `observable`.
 If we find the desired phase 1, we complete the `future`.
 The runnable is scheduled to start polling after 100 milliseconds with an interval of 200 milliseconds.
-Of coures, these values will be configurable in a production setting.
+Of course, these values will be configurable in a production setting.
 
 Before we return the future we need to ensure, that the polling is stopped once the future is completed.
 This is done with a small callback using `future.whenComplete`.
@@ -140,6 +140,6 @@ If this was a long-running execution, this early check may hurt performance more
 The whole logic on when to complete the [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html) is now extracted to the private function `isPhaseOne(...)`.
 Everything else is the glue code to create the polling future.
 
-In summary, we developed a small class, that allows to wrap polling for some condition into a [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html).
+In summary, we developed a small class, that allows us to wrap polling for some condition into a [CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html).
 We have seen, that handling a [ScheduledExecutorService](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html) is required for the implementation.
 The resulting Future can be used in different asynchronous applications, e.g. with [Spring WebFlux](https://docs.spring.io/spring/docs/current/spring-framework-reference/web-reactive.html) a reactive stack for building web applications.
